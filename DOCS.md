@@ -2,7 +2,7 @@
 
 ## Command
 ```bash
-npx create-next-app@latest
+npx create-next-app@latest || npx create-next-app@16.2.9
 ```
 - Project name: `./`
 - Recommended Next.js defaults: `yes`
