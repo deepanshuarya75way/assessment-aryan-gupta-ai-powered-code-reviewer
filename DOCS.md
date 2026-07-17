@@ -205,6 +205,7 @@ plugins: [nextCookies()],
 <!-- TODO -->
 
 ## 3.12 UI
+- (write code in below files)
 - app/(auth)/layout.tsx
 - app/(auth)/sign-in/page.tsx
 - features/auth/components/github-sign-in-form.tsx
