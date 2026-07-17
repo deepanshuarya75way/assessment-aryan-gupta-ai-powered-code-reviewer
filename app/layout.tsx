@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
