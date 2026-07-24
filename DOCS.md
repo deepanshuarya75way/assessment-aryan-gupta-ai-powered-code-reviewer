@@ -210,3 +210,22 @@ plugins: [nextCookies()],
 - app/(auth)/sign-in/page.tsx
 - features/auth/components/github-sign-in-form.tsx
 - features/auth/actions/index.ts
+******************************************************************************************************
+
+## 3.a Auth Session helper, middleware(proxy) & logout with UI
+- if unauthorized -> go to signin
+- if authorized -> go to dashboard
+
+- features/auth/utils/index.ts                          (write PAHTS)
+- features/auth/actions/index.ts                        (add the callback fns for those PATHS)
+  - requireUnAuth == auth is not req                    (logged in hai)
+  - requireAuth == auth is req                          (logged in nhi hai)
+- app/(auth)/sign-in/layout.tsx                         (check if ur is authenticated or not)
+
+- app/(protected)   -> page.tsx  & layout.tsx           (create dashboard)
+
+- proxy.ts                                              (for better redirection)
+- features/auth/utils/auth-proxy.ts                     (to handle Auth Proxy)
+
+- features/auth/components/user-menu.tsx                (user menu for logout)
+- app/page.tsx                                          (show in page)
