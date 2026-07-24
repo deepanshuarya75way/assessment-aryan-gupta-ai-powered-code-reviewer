@@ -229,3 +229,12 @@ plugins: [nextCookies()],
 
 - features/auth/components/user-menu.tsx                (user menu for logout)        (copy/paste)
 - app/page.tsx                                          (show in page)
+
+# Chapter 4 — Dashboard UI
+## 4.1 Shell & sidebar (copy/paste)
+- app/(protected)/dashboard/layout.tsx
+- features/dashboard/components/dashboard-shell.tsx
+- features/dashboard/components/dashboard-sidebar.tsx
+- features/dashboard/lib/routes.ts
+- features/dashboard/components/dashboard-nav.tsx
+- features/dashboard/components/sidebar-user-button.tsx
