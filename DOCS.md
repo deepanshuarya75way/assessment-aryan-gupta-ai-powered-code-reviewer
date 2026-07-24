@@ -227,5 +227,5 @@ plugins: [nextCookies()],
 - proxy.ts                                              (for better redirection)
 - features/auth/utils/auth-proxy.ts                     (to handle Auth Proxy)
 
-- features/auth/components/user-menu.tsx                (user menu for logout)
+- features/auth/components/user-menu.tsx                (user menu for logout)        (copy/paste)
 - app/page.tsx                                          (show in page)
