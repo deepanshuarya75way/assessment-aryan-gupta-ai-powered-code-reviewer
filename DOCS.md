@@ -238,3 +238,92 @@ plugins: [nextCookies()],
 - features/dashboard/lib/routes.ts
 - features/dashboard/components/dashboard-nav.tsx
 - features/dashboard/components/sidebar-user-button.tsx
+
+# Chapter 5 — GitHub App: Installation & Repo Fetching
+- Settings -> Developer Settings -> GitHub Apps -> Create GitHub App -> write:-
+
+## 5.1 Create the GitHub App (Permissions, webhook URL, private key; env vars.)
+- GitHub App name:- PR Reviewer Powered via AI
+- Homepage URL : `https://unpreserved-elke-unrefractory.ngrok-free.dev/`  (ngrok tunning by following below 2 points)
+  - `npm run dev` (on vscode 1st terminal)
+  - (ngrok -> setup & installation -> Get a public URL for your app -> `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000` (on vscode 2nd terminal))
+
+- add in next.config.ts
+```bash
+const nextConfig: NextConfig = {
+  /* config options here */
+  allowedDevOrigins: ['unpreserved-elke-unrefractory.ngrok-free.dev'],
+};
+```
+
+- Callback URL: `https://unpreserved-elke-unrefractory.ngrok-free.dev/api/auth/callback/github`   (this will use github client id and secret insted of our OAuth setup)
+
+- ✅ Expire user authorization tokens
+
+- Post installation -> Setup URL (optional) -> `https://unpreserved-elke-unrefractory.ngrok-free.dev/api/github/callback`
+
+- Webhook
+  - ✅ Active
+  - Webhook URL: `https://unpreserved-elke-unrefractory.ngrok-free.dev/api/github/webhook`
+  - Secret: `7cd249ab57**************4cdecad123797c2c` (modify 1-2 char)
+  - ✅ Enable SSL verification
+
+- Permissions -> Repository permissions
+  - Contents: Read-Only
+  - Metadata: Read-Only
+  - Pull requests: Read and write
+
+- Subscribe to events ✅
+  - Meta
+  - Commit comment
+  - Pull request
+  - Pull request review
+  - Pull request review comment
+  - Star
+
+- Where can this GitHub App be installed? :- ✅ Any account
+
+- `Create Github APP`
+
+
+- in `.env`
+```bash
+GITHUB_APP_ID=****814
+GITHUB_APP_NAME=pr-reviewer-powered-via-ai
+NEXT_PUBLIC_GITHUB_PUBLIC_LINK=https://github.com/apps/pr-reviewer-powered-via-ai (Public link)
+GITHUB_CLIENT_ID=Iv**********
+GITHUB_CLIENT_SECRET=467**************  (via generate new client secret button)
+```
+
+- Display information :- `upload a logo`
+
+- Private keys -> `generate a private key` -> save it into the project folder
+
+- `save changes`
+
+- in `.env`
+```bash
+GITHUB_APP_PRIVATE_KEY= (please add the private key with proper escapin character, tell AI to do it)
+GITHUB_WEBHOOK_SECRET=7cd249ab57**************4cdecad123797c2c
+BETTER_AUTH_URL=https://unpreserved-elke-unrefractory.ngrok-free.dev
+```
+
+- in `lib/auth.ts`
+```bash
+mapProfileToUser: async(profile) => ({
+  email: profile.email ?? `${profile.id}@users.noreply.github.com`,
+  name: profile.name ?? profile.login
+})
+```
+
+## 5.2 Installation flow (Connect card → install on GitHub → callback saves installationId per user.)
+- features/github/utils/github-app.ts                       (`npm i octokit` -> initialise Github App ka instance using octokit)
+- features/dashboard/lib/types.ts                           (copy/paste)
+- prisma/schema.prisma                                      (write github installation Model -> `npx prisma migrate dev` -> Enter a name for the new migration: github-app -> `npx prisma generate`)
+- features/github/server/installation.ts                    (write functionality for Installation/Deletion of github app & updation in DB)
+- features/dashboard/com onents/dashboard-header.tsx        (create dashboard header)
+- features/dashboard/lib/LB status-s le.ts                  (copy/paste)
+- features/github/actions/index.ts
+- features/github/components/github-connect-card.tsx
+- app/(protected)/dashboard/github/page.tsx
+- app/api/github/callback/route.ts
