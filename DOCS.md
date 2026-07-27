@@ -329,12 +329,47 @@ mapProfileToUser: async(profile) => ({
 - app/api/github/callback/route.ts
 
 # Chapter 6 — Receiving PR Webhooks
-- app > api > github > webhook > route.ts                   (to handle Github Webhook)
-- features > reviews > server > save-pull-request.ts        (save pr to prisma db)
-- features > github > server > webhook-handler.ts           (handleGithubWebhook : functionality of route.ts here)
+- app/api/github/webhook/route.ts                   (to handle Github Webhook)
+- features/reviews/server/save-pull-request.ts        (save pr to prisma db)
+- features/github/server/webhook-handler.ts           (handleGithubWebhook : functionality of route.ts here)
 - prisma/schema.prisma                                      (model PullRequest -> `npx prisma migrate dev` -> `npx prisma generate`)
 - TESTING THIS FLOW
     - `npm run dev`
     - `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000`
     - go to any project -> do a pr -> create pr in github's repo of that same project -> u can see the events in the vscode terminal
     - `npx prisma studio` to check if it is save in db or not
+
+# Chapter 7 — Background Jobs with Inngest
+## 7.1 Inngest setup
+- inngest.com -> docs -> getting started(nextjs) -> `.env`
+```bash
+INNGEST_DEV=1
+```
+
+- 1. Install Inngest: `npm install inngest`
+- 2. Run the Inngest Dev Server -> npx -> `npx inngest-cli@latest dev` ->u will get `http://localhost:8288` in terminal i.e. inngest client ka server
+- 3. Now Create an Inngest client -> 
+    - App Router -> features/inngest/client.ts                              (copy/paste)
+```bash
+import { Inngest } from "inngest";
+
+export const inngest = new Inngest({ id: "ai-powered-code-reviewer" });
+```
+    - app/api/inngest/route.ts                                              (copy/paste)
+```bash
+import { inngest } from "@/features/inngest/client";
+import { serve } from "inngest/next";
+
+export const { GET, POST, PUT } = serve({
+  client: inngest,
+  functions: [],
+});
+```
+- 4. Write your first function -> App Router
+    - Define the function in :- app/api/inngest/functions.ts                  (copy/paste)
+    - Then register the function with your serve handler in :- app/api/inngest/route.ts
+```bash
+functions: [processTask],
+```
+
+- TEST IF YOUR INNGEST APP REGISTER IN INNGEST SERVER OR NOT -> `npm run dev` -> `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000` -> see here (`http://localhost:8288` -> Apps) -> view function -> Invoke function -> 🎉 YOU CAN SEE Fn RUNNING
