@@ -327,3 +327,14 @@ mapProfileToUser: async(profile) => ({
 - features/github/components/github-connect-card.tsx
 - app/(protected)/dashboard/github/page.tsx
 - app/api/github/callback/route.ts
+
+# Chapter 6 — Receiving PR Webhooks
+- app > api > github > webhook > route.ts                   (to handle Github Webhook)
+- features > reviews > server > save-pull-request.ts        (save pr to prisma db)
+- features > github > server > webhook-handler.ts           (handleGithubWebhook : functionality of route.ts here)
+- prisma/schema.prisma                                      (model PullRequest -> `npx prisma migrate dev` -> `npx prisma generate`)
+- TESTING THIS FLOW
+    - `npm run dev`
+    - `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000`
+    - go to any project -> do a pr -> create pr in github's repo of that same project -> u can see the events in the vscode terminal
+    - `npx prisma studio` to check if it is save in db or not
