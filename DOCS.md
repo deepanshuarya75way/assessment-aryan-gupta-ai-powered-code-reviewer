@@ -373,3 +373,38 @@ functions: [processTask],
 ```
 
 - TEST IF YOUR INNGEST APP REGISTER IN INNGEST SERVER OR NOT -> `npm run dev` -> `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000` -> see here (`http://localhost:8288` -> Apps) -> view function -> Invoke function -> 🎉 YOU CAN SEE Fn RUNNING
+
+# Chapter 8 — The AI Review Pipeline
+## 8.1 AI-SDK setup
+- chrome -> ai sdk -> ai-sdk.dev -> `npm install ai`
+- search(open router) -> setup -> npm -> `npm install @openrouter/ai-sdk-provider`
+
+## 8.2 OpenRouter setup
+- `openrouter.ai` -> login -> Get API key -> new key -> name: ai-powered-code-reviewer -> create -> copy key -> `.env`
+```bash
+OPENROUTER_API_KEY=sk-or*****************************
+```
+
+## 8.1 cont...
+- Provider Instance -> features/ai/index.ts             (copy/paste)
+```bash
+apiKey: "YOUR_OPENROUTER_API_KEY" ❌ | apiKey: process.env.OPENROUTER_API_KEY ✅
+```
+
+## 8.3 Now write code
+- features/reviews/types/review.ts                    (ai generated review k types)
+- features/reviews/server/pr-files.ts                 (find diff code for review generation by ai, get all PR Files)
+- features/reviews/utils/chunk-code.ts                (code chunking functions)
+- features/reviews/server/save-pull-request.ts        (update)
+- features/github/server/webhook-handler.ts           (update)
+- features/reviews/server/generate-review.ts    (generate review by ai)
+- features/reviews/server/post-pr-comment.ts    (comments done after PR create, ai review is generated and about to merge)
+- features/reviews/server/review-pr-function.ts (inngest workflow)
+- app/api/inngest/route.ts                      (register full workflow of reviewPullRequest in inngest)
+
+- TESTING :- 
+  - `npm run dev`
+  - `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000`
+  - `npx inngest-cli@latest dev` -> `localhost/8288` -> runs
+
+  - goto any project -> write some code -> raise pr -> github pe create -> and u can see in inngest cli(`localhost/8288/runs`) -> 🎉 That's it!
