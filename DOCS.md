@@ -408,3 +408,56 @@ apiKey: "YOUR_OPENROUTER_API_KEY" ❌ | apiKey: process.env.OPENROUTER_API_KEY �
   - `npx inngest-cli@latest dev` -> `localhost/8288` -> runs
 
   - goto any project -> write some code -> raise pr -> github pe create -> and u can see in inngest cli(`localhost/8288/runs`) -> 🎉 That's it!
+
+# Chapter 9 — Repo Sync (Codebase Context)
+- prisma/schema.prisma                          (write model RepoSync -> `npx prisma migrate dev` -> `npx prisma generate`)
+
+- features/repo-sync/actions/repo-sync.ts
+
+- pinecone -> indexed -> `Create Index` -> 
+    - name: `aipoweredcodereviewer`
+    - `Create Index`
+    - `Connect` -> Install Pinecone (select: Node) -> (copy cmd): `npm install @pinecone-database/pinecone`
+    - features/pinecone/client.ts               (getting pinecode index)
+
+- PINECONE_API_KEY -> pinecone -> Api Key -> click `Api Key` -> name: aipoweredcodereviewer -> `create key` -> (copy/paste in `.env`) 
+
+- `.env`
+```bash
+PINECONE_INDEX=<INDEX_NAME>            (name u gave when creating index) eg: aipoweredcodereviewer
+PINECONE_API_KEY=pcsk_5*************************
+```
+
+## 9.1 Sync Inngest function
+- features/repo-sync/types/index.ts                       (contains types)
+- features/repo-sync/actions/repo-sync.ts                 (server action of repo-sync)
+- features/pinecone/client.ts                             (Pinecode client to get indexes)
+- features/repo-sync/server/repo-sync.ts                  (repo-sync code)
+- features/repo-sync/server/repo-sync-function.ts         (inngest background job of syncRepoCodebaseFunction)
+- features/github/server/repos.ts                         (backend logic to see all the repos in UI)
+
+## 9.2 Fetch the repos with infinite scroll (for UI) + sync button & status
+- app/api/github/repos/route.ts
+- app/api/inngest/route.ts                                (register syncRepoCodebaseFunction in inngest)
+- features/github/lib/repos-query.ts                      (implement infiniteQueryOptions for load data before hand & do infine scroll)
+- features/repo-sync/components/sync-repo-button.tsx      (sync button UI)
+- features/dashboard/components/repo-list.tsx             (listing all the repos UI)
+- app/(protected)/dashboard/repos/page.tsx                (dashboard -> repositories UI)
+- app/layout.tsx                                          (added <Toaster /> component)
+
+## 9.3 Use full repo synced context in reviews
+- features/reviews/server/review-pr-function.ts           (implemented inngest RAG pipeline)
+- features/reviews/server/vector.ts                       (implemented saveChunksToPinecone, searchPrContext functionality)
+- features/reviews/server/generate-review.ts
+
+## TESTING 
+- `npm run dev`
+- `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000` -> `https://unpreserved-elke-unrefractory.ngrok-free.dev`
+- `npx inngest-cli@latest dev` -> `http://127.0.0.1:8288/runs`
+- see dashboard -> repositories in applicaion -> `sync` anyone of them -> make `PR` in it
+- see in inngest (you will see 2 background jobs)
+  - 1. syncing background job
+  - 2. PR background job
+- You can see `Namespaces`:- Pinecone -> indexes
+- Now u can see Prisma :- `npx prisma studio` if database if updated or not.
+- 🎉 That's it!

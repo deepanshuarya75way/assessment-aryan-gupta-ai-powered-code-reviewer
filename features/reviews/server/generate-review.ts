@@ -45,7 +45,10 @@ Then use this structure if there are findings:
 type ReviewInput = {
   repoFullName: string;
   title: string;
-  diff: string;
+  /** Chunks retrieved from the PR's Pinecone namespace */
+  contextSnippets: string[];
+  /** Optional chunks from repo-sync namespace (full codebase context) */
+  repoContextSnippets: string[];
 };
 
 function buildRepoContextSection(repoContextSnippets: string[]) {
@@ -63,6 +66,9 @@ ${repoContext}`;
 }
 
 export async function generateReview(input: ReviewInput) {
+  const context = input.contextSnippets.join("\n\n---\n\n");
+  const repoContextSection = buildRepoContextSection(input.repoContextSnippets);
+
   const { text } = await generateText({
     model: openrouter(REVIEW_MODEL),
     system: SYSTEM_PROMPT,
@@ -70,8 +76,8 @@ export async function generateReview(input: ReviewInput) {
 
         Pull request title: ${input.title}
 
-        ## Changed files (unified diff)
-        ${input.diff}${buildRepoContextSection([])}`,
+        Code changes:
+        ${context}${repoContextSection}`,
   });
 
   return text;
