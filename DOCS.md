@@ -461,3 +461,74 @@ PINECONE_API_KEY=pcsk_5*************************
 - You can see `Namespaces`:- Pinecone -> indexes
 - Now u can see Prisma :- `npx prisma studio` if database if updated or not.
 - 🎉 That's it!
+
+# Chapter 10 — Payments with Razorpay
+- accounts & setting -> Api Key -> `.env`
+```bash
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_TK************
+RAZORPAY_KEY_SECRET=Xsaa*****************
+```
+
+- razorpay -> subscriptions -> plans -> `create plan`
+  - Plan Name: AI Powered Code Reviewer
+  - Billing frequency: Every `1` `Months`
+  - Billing Amount: `999`
+  - `Create Plan`
+  - `.env`
+  ```bash
+  RAZORPAY_PLAN_ID=plan_TL***********
+  ```
+
+- razorpay -> subscriptions -> subscriptions -> `create new subscription`
+  - plan dettails
+    - select plan: `select via dropdown menu`
+    - start data: ✅(immdiately)
+    - Total count: 12
+    - click `Next`
+
+  - Add Ons
+    - click `Next`
+
+  - Link Details
+    - Link Expiry: ✅ No Expiry
+    - click `Next`
+
+  - Review
+    - click `Create Subscription Link`
+
+- VSCode -> teminal -> `npm i razorpay`
+
+- prisma/schema.prisma                                    (update the user model with payments -> `npx prisma migrate dev` -> name: payment -> `npx prisma generate`)
+
+## 10.1 Create Plan , subscription then webhook in Razorpay
+- razorpay -> developers -> webhooks -> `Add new webhook`
+  - webhook URL: https://unpreserved-elke-unrefractory.ngrok-free.dev/api/razorpay/webhook    (add `https://unpreserved-elke-unrefractory.ngrok-free.dev` + `/api/razorpay/webhook`)
+  - secret: b8d9f*******************                        (create your strong secret)
+  - Active Events: ✅ ALL Subscription Events
+  - `Create Webhook`
+-  `.env`
+```bash
+RAZORPAY_WEBHOOK_SECRET="b8d9f********************"          (paste that webhook secret here)
+```
+
+## 10.2
+## 10.2.1 Plans & limits — Free (5 reviews/month) vs Pro (unlimited)
+## 10.2.2 Subscription checkout — Razorpay subscription, upgrade button, checkout flow
+## 10.2.3 Webhook & rate limiting — Verify Razorpay webhooks, update plan, rate-limit free users in the GitHub webhook.
+## 10.2.4 Settings page — Current plan, renewal date, cancel flow.
+- features/billing/lib/razorpay.ts                            (initialise reazorpay client)
+- features/billing/server/subscription.ts                     (getUserSubscription, createProSubscription, cancelProSubscription)
+- features/billing/server/usage.ts                            (usage related)
+- features/settings/lib/plan-details.ts                       (PLAN_DETAIL - free | pro)
+- features/github/server/webhook-handler.ts                   (rate-limit free users in the GitHub webhook)
+- lib/billing.ts                                              (startProSubscription, cancelSubscription)
+- features/billing/components/upgrade-button.tsx              (upgrade to pro button)
+- app/api/razorpay/webhook/route.ts                           (razorpay webhook POST route)
+- features/settings/types/index.ts
+- features/billing/components/cancel-subscription-button.tsx  (cancel subscription button)
+- features/dashboard/components/settings-content.tsx          (Settings page body with Profile and Subscription tabs)
+- features/settings/server/get-settings.ts                    (getUserSettings)
+- app/(protected)/dashboard/settings/page.tsx                 (setting page)
+
+## TESTING
+- `npm run dev` -> `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000` -> website -> dashboard -> settings -> subscription -> `upgrade to pro` -> 🎉 That's it!
