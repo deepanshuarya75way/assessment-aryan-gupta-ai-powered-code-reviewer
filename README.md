@@ -125,4 +125,4 @@ Refer to `DOCS.md` for project initialization notes and additional setup guidanc
 
 
 ## Live application
-`https://aicodereview-ag.vercel.app`
+[AICODEREVIEW](https://aicodereview-ag.vercel.app)
