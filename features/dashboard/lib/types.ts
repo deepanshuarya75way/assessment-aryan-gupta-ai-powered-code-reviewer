@@ -3,6 +3,13 @@ export type RepoSyncStatus = "pending" | "syncing" | "synced" | "failed";
 /** Whether a repository is visible to everyone or only to collaborators. */
 export type RepoVisibility = "public" | "private";
 
+/** Lifecycle of a pull request review, mirroring `PullRequest.status`. */
+export type PullRequestStatus =
+  | "pending"
+  | "processing"
+  | "reviewed"
+  | "rate_limited";
+
 /**
  * A repository row displayed in the Repositories table.
  * Fields mirror what the GitHub API returns, plus optional sync status.

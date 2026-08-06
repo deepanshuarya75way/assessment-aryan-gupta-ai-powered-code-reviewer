@@ -1,4 +1,24 @@
 import { cn } from "@/lib/utils";
+import type { PullRequestStatus } from "./types";
+
+/** Badge tone per review status, shared by the overview and PR pages. */
+export const PR_STATUS_TONE: Record<
+  PullRequestStatus,
+  keyof typeof statusBadgeClass
+> = {
+  reviewed: "success",
+  processing: "info",
+  pending: "neutral",
+  rate_limited: "danger",
+};
+
+/** `statusBadge` capitalizes but does not un-snake, so labels are explicit. */
+export const PR_STATUS_LABEL: Record<PullRequestStatus, string> = {
+  reviewed: "reviewed",
+  processing: "processing",
+  pending: "queued",
+  rate_limited: "rate limited",
+};
 
 /** Background, border, and text colors for inline status badges. */
 export const statusBadgeClass = {
@@ -30,11 +50,11 @@ export const statusButtonClass = {
  */
 export function statusBadge(
   tone: keyof typeof statusBadgeClass,
-  className?: string
+  className?: string,
 ) {
   return cn(
     "inline-flex items-center rounded-none border px-2 py-0.5 text-xs font-medium capitalize",
     statusBadgeClass[tone],
-    className
+    className,
   );
 }

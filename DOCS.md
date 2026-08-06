@@ -532,3 +532,20 @@ RAZORPAY_WEBHOOK_SECRET="b8d9f********************"          (paste that webhook
 
 ## TESTING
 - `npm run dev` -> `ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000` -> website -> dashboard -> settings -> subscription -> `upgrade to pro` -> 🎉 That's it!
+
+# Chapter 11 — Landing Page
+- features/landing/components/dashboard-preview.tsx
+- app/page.tsx
+- app/layout.tsx
+
+# Chapter 12 — dashboard/overview page
+- features/overview/types/index.ts
+- features/overview/server/overview.ts
+- app/api/overview/route.ts
+- features/overview/components/setup-checklist.tsx
+- features/overview/components/overview-content.tsx
+- app/(protected)/dashboard/page.tsx
+- app/(protected)/dashboard/layout.tsx
+
+# Chapter 13 — dashboard/pull-request
+- `npm i react-markdown remark-gfm`
