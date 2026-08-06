@@ -60,7 +60,7 @@ function formatRenewalDate(renewsAt: string | null): string | null {
 /**
  * Maps subscription status enum to a lowercase label for the UI.
  *
- * @param status - `active`, `trialing`, or `canceled`.
+ * @param status - `active`, `trialing`, `canceling`, or `canceled`.
  * @returns Display string for the status line.
  */
 function getSubscriptionStatusLabel(
@@ -72,6 +72,10 @@ function getSubscriptionStatusLabel(
 
   if (status === "trialing") {
     return "trialing";
+  }
+
+  if (status === "canceling") {
+    return "cancels at period end";
   }
 
   return "canceled";
@@ -174,17 +178,31 @@ function SubscriptionTab({
   const isActive =
     subscription.status === "active" || subscription.status === "trialing";
 
-  // Visual styling reflects active vs inactive subscription
+  // Cancelled at Razorpay, but paid access continues until renewsAt. Pro
+  // features stay on; the subscription simply will not renew.
+  const isCanceling = subscription.status === "canceling";
+
+  // Three visual states: healthy, winding down, inactive.
   let cardBorderClass = "border-border";
+  let panelClass = "border-border bg-muted/30";
   let planTextClass = "text-foreground";
   let statusTextClass = "text-muted-foreground";
   let badgeTone: "success" | "neutral" | "warning" = "neutral";
 
   if (isActive) {
     cardBorderClass = "border-green-500/25";
+    panelClass = "border-green-500/30 bg-green-500/5";
     planTextClass = "text-green-800 dark:text-green-300";
     statusTextClass = "text-green-700 dark:text-green-400";
     badgeTone = "success";
+  }
+
+  if (isCanceling) {
+    cardBorderClass = "border-amber-500/25";
+    panelClass = "border-amber-500/30 bg-amber-500/5";
+    planTextClass = "text-amber-800 dark:text-amber-300";
+    statusTextClass = "text-amber-700 dark:text-amber-400";
+    badgeTone = "warning";
   }
 
   if (subscription.status === "canceled") {
@@ -203,9 +221,7 @@ function SubscriptionTab({
         <div
           className={cn(
             "flex flex-wrap items-center justify-between gap-4 rounded-none border p-4",
-            isActive
-              ? "border-green-500/30 bg-green-500/5"
-              : "border-border bg-muted/30",
+            panelClass,
           )}
         >
           <div>
@@ -217,7 +233,9 @@ function SubscriptionTab({
             </p>
             {renewalDate ? (
               <p className="text-xs text-muted-foreground">
-                Renews {renewalDate}
+                {isCanceling
+                  ? `Pro access until ${renewalDate}`
+                  : `Renews ${renewalDate}`}
               </p>
             ) : null}
           </div>
@@ -233,9 +251,8 @@ function SubscriptionTab({
       <CardFooter className="flex flex-wrap gap-2">
         {subscription.plan === "free" ? <UpgradeButton /> : null}
         {subscription.plan === "pro" ? (
-          <CancelSubscriptionButton
-            disabled={subscription.status === "canceled"}
-          />
+          // Already cancelled — clicking again would 400 at Razorpay.
+          <CancelSubscriptionButton disabled={isCanceling} />
         ) : null}
       </CardFooter>
     </Card>

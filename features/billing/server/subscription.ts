@@ -1,11 +1,9 @@
-
-
 import type { UserSubscription } from "@/features/dashboard/lib/types";
 import { getRazorpay } from "@/features/billing/lib/razorpay";
 import { prisma } from "@/lib/db";
 
 export async function getUserSubscription(
-  userId: string
+  userId: string,
 ): Promise<UserSubscription> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -32,10 +30,11 @@ export async function getUserSubscription(
 
   if (user.subscriptionStatus === "canceled") {
     const stillActive =
-      user.subscriptionRenewsAt !== null && user.subscriptionRenewsAt > new Date();
+      user.subscriptionRenewsAt !== null &&
+      user.subscriptionRenewsAt > new Date();
 
     if (stillActive) {
-      return { plan: "pro", status: "active", renewsAt };
+      return { plan: "pro", status: "canceling", renewsAt };
     }
 
     return { plan: "free", status: "canceled", renewsAt };

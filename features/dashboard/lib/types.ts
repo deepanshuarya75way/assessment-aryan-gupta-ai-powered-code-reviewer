@@ -45,6 +45,7 @@ export type SubscriptionPlan = "free" | "pro";
  */
 export type UserSubscription = {
   plan: SubscriptionPlan;
-  status: "active" | "canceled" | "trialing";
+  /** `canceling` — cancelled at Razorpay, paid access continues to `renewsAt`. */
+  status: "active" | "canceling" | "canceled" | "trialing";
   renewsAt: string | null;
 };
