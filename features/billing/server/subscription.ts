@@ -96,3 +96,7 @@ export async function cancelProSubscription(userId: string) {
     data: { subscriptionStatus: "canceled" },
   });
 }
+
+export function hasProAccess(subscription: UserSubscription): boolean {
+  return subscription.plan === "pro";
+}
