@@ -41,11 +41,17 @@ export function UpgradeButton() {
     setLoading(true);
 
     try {
-      const { subscriptionId } = await startProSubscription();
+      const result = await startProSubscription();
+
+      // Narrowing on `ok` is what makes subscriptionId accessible below.
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
 
       const checkout = new window.Razorpay({
         key,
-        subscription_id: subscriptionId,
+        subscription_id: result.subscriptionId,
         name: "AI Powered Code Reviewer",
         description: "Pro plan — unlimited AI reviews",
         handler: () => {
