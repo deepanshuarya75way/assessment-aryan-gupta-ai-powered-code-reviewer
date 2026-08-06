@@ -549,3 +549,14 @@ RAZORPAY_WEBHOOK_SECRET="b8d9f********************"          (paste that webhook
 
 # Chapter 13 — dashboard/pull-request
 - `npm i react-markdown remark-gfm`
+- app/page.tsx
+- features/dashboard/lib/types.ts
+- features/dashboard/lib/status-style.ts
+- features/pull-requests/types/index.ts
+- features/pull-requests/server/pull-requests.ts
+- app/api/pull-requests/route.ts
+- features/pull-requests/components/review-markdown.tsx
+- features/pull-requests/components/pull-request-list.tsx
+- features/pull-requests/components/review-refresher.tsx
+- app/(protected)/dashboard/pull-request/page.tsx
+- app/(protected)/dashboard/pull-request/[id]/page.tsx
