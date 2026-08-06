@@ -21,7 +21,13 @@ export function CancelSubscriptionButton({
     setLoading(true);
 
     try {
-      await cancelSubscription();
+      const result = await cancelSubscription();
+
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      
       toast.success(
         "Subscription canceled. Pro access continues until renewal date.",
       );
