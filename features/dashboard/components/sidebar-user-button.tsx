@@ -2,6 +2,7 @@
 
 import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 import { UserMenu, UserMenuUser } from "@/features/auth/components/user-menu";
+import { cn } from "@/lib/utils";
 
 type SidebarUserButtonProps = {
   user: UserMenuUser;
@@ -16,7 +17,11 @@ export function SidebarUserButton({ user, plan }: SidebarUserButtonProps) {
           user={user}
           plan={plan}
           variant="profile"
-          className="w-full [&_button]:h-12 [&_button]:w-full [&_button]:justify-start [&_button]:gap-2 [&_button]:px-2"
+          className={cn(
+            "w-full",
+            "[&_button]:h-12 [&_button]:w-full [&_button]:justify-start [&_button]:gap-2 [&_button]:px-2",
+            "[[data-collapsible=icon]_&_button]:justify-center [[data-collapsible=icon]_&_button]:gap-0 [[data-collapsible=icon]_&_button]:px-0",
+          )}
         />
       </SidebarMenuItem>
     </SidebarMenu>

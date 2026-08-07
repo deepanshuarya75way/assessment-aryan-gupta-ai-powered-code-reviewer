@@ -105,10 +105,10 @@ export function UserMenu({
             aria-label="Open account menu"
           >
             <UserAvatar user={user} size="sm" />
-            <span className="max-w-32 truncate text-left text-xs font-medium">
+            <span className="max-w-32 truncate text-left text-xs font-medium group-data-[collapsible=icon]:hidden">
               {displayName}
             </span>
-            <ChevronsUpDownIcon className="size-4 text-muted-foreground" />
+            <ChevronsUpDownIcon className="size-4 text-muted-foreground group-data-[collapsible=icon]:hidden" />
           </Button>
         )}
       </DropdownMenuTrigger>
