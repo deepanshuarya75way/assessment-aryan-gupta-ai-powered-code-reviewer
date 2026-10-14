@@ -1,5 +1,7 @@
 import type { CodeChunk } from "@/features/reviews/types/review";
 import { getPineconeIndex } from "@/features/pinecone/client";
+import {extractTerms, fuse, dedupe, type Chunk} from "@/features/pinecone/hybrid";
+import {keywordSearch} from "@/features/pinecone/keyword-search";
 
 /** Top 10 similar results */
 const CONTEXT_RESULTS = 10;
@@ -24,23 +26,43 @@ export async function saveChunksToPinecone(
   await index.namespace(namespace).upsertRecords({ records });
 }
 
-export async function searchPrContext(namespace: string, query: string) {
+// npx ngrok config add-authtoken 2oQp2VUXGtWILvfWSAlmYXLZxNo_47R1erFFXMmnvJAQbs33H
+// npx ngrok http --url=unpreserved-elke-unrefractory.ngrok-free.dev 3000
+
+export async function denseSearch(namespace: string, query: string): Promise<Chunk[]> {
   const index = getPineconeIndex();
-
   const response = await index.namespace(namespace).searchRecords({
-    query: { topK: CONTEXT_RESULTS, inputs: { text: query } },
+    query: {topK: CONTEXT_RESULTS, inputs: {text:query}},
   });
+  const out: Chunk[] = [];
+  for(const hit of response.result.hits) {
+    const fields = hit.fields as {text?: string; filePath?: string};
+    if(!fields.text) continue;
+    out.push({id: hit._id, filePath: fields.filePath ?? "", text: fields.text});
+  }
+  return out;
+}
 
-  const snippets: string[] = [];
+const formatSnippet = (c: Chunk) => `File: ${c.filePath}\n${c.text}`;
 
-  for (const hit of response.result.hits) {
-    const fields = hit.fields as { text?: string; filePath?: string };
-    if (!fields.text) {
-      continue;
-    }
+export async function searchPrContext(namespace: string, query: string) {
+  return (await denseSearch(namespace, query)).map(formatSnippet);
+}
 
-    snippets.push(`File: ${fields.filePath}\n${fields.text}`);
+export async function searchRepoContextHybrid(
+  namespace: string,
+  query: string,
+  diffText: string,
+) {
+  const dense = await denseSearch(namespace, query);
+
+  let sparse: Chunk[] = [];
+  try {
+    sparse = await keywordSearch(namespace, extractTerms(diffText));
+  } catch {
+    sparse = [];
   }
 
-  return snippets;
+  const merged = sparse.length ? fuse(dense, sparse) : dense;
+  return dedupe(merged).slice(0, CONTEXT_RESULTS).map(formatSnippet);
 }

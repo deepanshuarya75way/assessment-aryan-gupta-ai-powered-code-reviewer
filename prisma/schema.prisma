@@ -131,3 +131,15 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+model RepoChunk {
+  namespace String
+  id String
+  filePath String
+  text String
+  createdAt DateTime @default(now())
+
+  @@id([namespace, id])
+  @@index([namespace])
+  @@map("repo_chunk")
+}

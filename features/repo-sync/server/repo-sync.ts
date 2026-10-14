@@ -199,3 +199,12 @@ export async function triggerRepoSync(
     data: { repoSyncId: repoSync.id },
   });
 }
+
+export async function replaceRepoChunkInDb(namespace: string, chunks: CodeChunk[]) {
+  await prisma.repoChunk.deleteMany({where : {namespace} });
+  const rows = chunks.filter((c) => c.text.trim())
+                    .map((c) => ({namespace, id: c.id, filePath: c.filePath, text: c.text}));
+  for(let i = 0; i < rows.length; i += 1000) {
+    await prisma.repoChunk.createMany({data: rows.slice(i, i + 1000), skipDuplicates: true});
+  }
+}

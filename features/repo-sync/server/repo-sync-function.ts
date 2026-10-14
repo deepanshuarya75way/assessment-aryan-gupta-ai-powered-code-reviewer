@@ -6,6 +6,7 @@ import {
   deleteRepoNamespace,
   getRepoFiles,
   saveRepoChunks,
+  replaceRepoChunkInDb,
 } from "@/features/repo-sync/server/repo-sync";
 
 export const syncRepoCodebaseFunction = inngest.createFunction(
@@ -47,10 +48,15 @@ export const syncRepoCodebaseFunction = inngest.createFunction(
         await deleteRepoNamespace(namespace);
       });
     }
+    // unpreserved-elke-unrefractory.ngrok-free.dev 3000
 
     await step.run("save-vectors-to-pinecone", async () => {
       await saveRepoChunks(namespace, chunks);
     });
+
+    await step.run("save-chunks-to-db", async () => {
+      await replaceRepoChunkInDb(namespace, chunks);
+    })
 
     await step.run("mark-synced", async () => {
       await prisma.repoSync.update({

@@ -8,6 +8,7 @@ import {
   buildPrNamespace,
   saveChunksToPinecone,
   searchPrContext,
+  searchRepoContextHybrid,
 } from "./vector";
 import { buildRepoNamespace } from "@/features/repo-sync/server/repo-sync";
 
@@ -73,7 +74,8 @@ export const reviewPullRequest = inngest.createFunction(
         }
 
         const repoNamespace = buildRepoNamespace(pullRequest.repoFullName);
-        return searchPrContext(repoNamespace, pullRequest.title);
+        const diffText = chunks.map((c) => c.text).join("\n");
+        return searchRepoContextHybrid(repoNamespace, pullRequest.title, diffText);
       },
     );
 
